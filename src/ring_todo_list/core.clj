@@ -1,5 +1,6 @@
 (ns ring-todo-list.core
   (:require [reitit.ring :as ring]
+            [ring.middleware.reload :refer [wrap-reload]]
             [ring.adapter.jetty :refer [run-jetty]]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [muuntaja.core :as m]
@@ -38,4 +39,8 @@
               }})))
 
 (defn -main [& args]
-  (run-jetty app {:port 3000}))
+  (run-jetty
+    (-> app
+        var
+        wrap-reload)
+    {:port 3000}))
