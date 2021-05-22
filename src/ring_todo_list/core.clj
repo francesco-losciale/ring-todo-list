@@ -1,5 +1,8 @@
 (ns ring-todo-list.core
   (:require [reitit.ring :as ring]
+            [reitit.ring.coercion :as coercion]
+            [reitit.coercion.schema]
+            [schema.core :as s]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.adapter.jetty :refer [run-jetty]]
             [reitit.ring.middleware.muuntaja :as muuntaja]
@@ -29,17 +32,23 @@
           }]
         ["/:id"
          {:get
-         {:handler
-          (fn [{{:keys [id]} :path-params}]
-            {:status 200
-             :body   {:id id :todo-list [{:id 2 :text "Do something else"}]}
-             })}}]
+          {:coercion   reitit.coercion.schema/coercion
+           :parameters {:path {:id s/Int}}
+           :handler
+                       (fn [{:keys [parameters]}]
+                         (let [id (-> parameters :path :id)]
+                           {:status 200
+                           :body   {:id id :todo-list [{:id 2 :text "Do something else"}]}
+                           }))}}]
         ]
        ]
 
       {:data {
               :muuntaja   m/instance
-              :middleware [muuntaja/format-middleware]
+              :middleware [muuntaja/format-middleware
+                           coercion/coerce-exceptions-middleware
+                           coercion/coerce-request-middleware
+                           coercion/coerce-response-middleware]
               }})))
 
 (defn -main [& args]
