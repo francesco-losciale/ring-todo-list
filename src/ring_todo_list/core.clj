@@ -17,7 +17,7 @@
         [""
          {:post
           {:handler
-           (fn [{{:keys [todo-list]} :body-params}]         ;{{:keys [x y]} :body-params}
+           (fn [{{:keys [todo-list]} :body-params}]
              {:status 200
               :body   todo-list
               })
