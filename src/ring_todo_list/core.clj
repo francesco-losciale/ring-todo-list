@@ -28,7 +28,7 @@
                 :handler
                 (fn [request]
                   {:status 200
-                   :body   {:todo-list [{:id 1 :text "Do something"}]}
+                   :body   (:body-params request)
                    })
                 }
          }]]
