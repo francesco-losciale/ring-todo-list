@@ -9,21 +9,7 @@
 (def app
   (ring/ring-handler
     (ring/router
-      [["/api/hello" {:get  {
-                             :handler
-                             (fn [request]
-                               {:status  200
-                                :headers {"Content-Type" "text/plain"}
-                                :body    "Hello World"})
-                             }
-                      :post {
-                             :handler
-                             (fn [request]
-                               {:status  200
-                                :headers {"Content-Type" "text/plain"}
-                                :body    (str (:body-params request))})
-                             }}]
-       ["/api/v1/todo-list"
+      [["/api/v1/todo-list"
         {:post
          {:handler
           (fn [{{:keys [todo-list]} :body-params}]          ;{{:keys [x y]} :body-params}
