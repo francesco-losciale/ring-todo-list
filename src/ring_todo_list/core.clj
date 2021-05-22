@@ -26,9 +26,9 @@
        ["/api/v1/todo-list"
         {:post {
                 :handler
-                (fn [request]
+                (fn [{{:keys [todo-list]} :body-params}]                               ;{{:keys [x y]} :body-params}
                   {:status 200
-                   :body   (:body-params request)
+                   :body   todo-list
                    })
                 }
          }]]
