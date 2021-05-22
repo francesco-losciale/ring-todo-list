@@ -13,7 +13,7 @@
   (ring/ring-handler
     (ring/router
       [
-       ["/api/v1/todo-list"
+       ["/api/v1/todo-lists"
         [""
          {:post
           {:handler
@@ -26,7 +26,7 @@
           {:handler
            (fn [_]
              {:status 200
-              :body   {:todo-list [{:id 2 :text "Do something"}]}
+              :body   [{:id 1 :todo-list [{:id 2 :text "Do something"}]}]
               })
            }
           }]
