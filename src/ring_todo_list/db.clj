@@ -2,7 +2,6 @@
   (:require [monger.core :as mg]))
 
 ; TODO
-; migration scripts for mongodb
 ; create apis to read and save lists
 
 (defn connect []
