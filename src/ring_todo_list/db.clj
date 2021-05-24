@@ -1,10 +1,30 @@
 (ns ring-todo-list.db
-  (:require [monger.core :as mg]))
+  (:require [monger.core :as mg]
+            [monger.credentials :as mcr]
+            [monger.collection :as mc])
+  (:import org.bson.types.ObjectId))
 
-; TODO
-; create apis to read and save lists
+; TODO it is recommended to use ObjectId so that your documents are immutable
 
-(defn connect []
-  (let [conn (mg/connect {:host "localhost" :port 27017})
-        db   (mg/get-db conn "todo-lists")]
+(defn db-connection! []
+  (let [cred (mcr/create "todo-lists" "todo-lists" "example")
+        conn (mg/connect-with-credentials "localhost" 27017 cred)]
     conn))
+
+(defn insert-todo-list! [conn]
+  (let [db   (mg/get-db conn "todo-lists")]
+    (mc/insert-and-return db "collection" {:text "Test"})
+    ))
+
+(defn close! [conn]
+  (mg/disconnect conn))
+
+(comment
+  (let [conn (db-connection!)]
+    (insert-todo-list! conn)
+    (close! conn))
+  (let [conn (db-connection!)]
+   (mc/find-maps (mg/get-db conn "todo-lists") "collection"))
+  (let [conn (db-connection!)]
+    (mc/find-one-as-map (mg/get-db conn "todo-lists") "collection" { :_id (ObjectId. "60ab92b90b6615f55ab0b21c")}))
+  )
