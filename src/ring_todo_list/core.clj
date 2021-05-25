@@ -7,6 +7,7 @@
             [ring.adapter.jetty :refer [run-jetty]]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [muuntaja.core :as m]
+            [ring-todo-list.db :as db]
             ))
 
 (def app
@@ -17,10 +18,15 @@
         [""
          {:post
           {:handler
-           (fn [{{:keys [todo-list]} :body-params}]
-             {:status 200
-              :body   todo-list
-              })
+           (fn [request]
+             (let [todo-list (:body-params request)]
+               {:status 200
+                :body   (let [conn (db/db-connection!)
+                              saved-todo-list (db/insert-todo-list! conn todo-list)]
+                          (do
+                            (db/close! conn)
+                            saved-todo-list))
+                }))
            }
           :get
           {:handler
@@ -38,8 +44,8 @@
                        (fn [{:keys [parameters]}]
                          (let [id (-> parameters :path :id)]
                            {:status 200
-                           :body   {:id id :todo-list [{:id 2 :text "Do something else"}]}
-                           }))}}]
+                            :body   {:id id :todo-list [{:id 2 :text "Do something else"}]}
+                            }))}}]
         ]
        ]
 

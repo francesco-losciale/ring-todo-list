@@ -11,9 +11,9 @@
         conn (mg/connect-with-credentials "localhost" 27017 cred)]
     conn))
 
-(defn insert-todo-list! [conn]
+(defn insert-todo-list! [conn todo-list]
   (let [db   (mg/get-db conn "todo-lists")]
-    (mc/insert-and-return db "collection" {:text "Test"})
+    (mc/insert-and-return db "collection" todo-list)
     ))
 
 (defn close! [conn]
