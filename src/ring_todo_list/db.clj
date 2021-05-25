@@ -12,13 +12,19 @@
     conn))
 
 (defn insert-todo-list! [conn todo-list]
-  (let [db   (mg/get-db conn "todo-lists")]
+  (let [db (mg/get-db conn "todo-lists")]
     (mc/insert-and-return db "collection" todo-list)
     ))
 
 (defn get-all []
   (let [conn (db-connection!)]
     (mc/find-maps (mg/get-db conn "todo-lists") "collection")))
+
+(defn get-one [^String object-id]
+  (let [conn (db-connection!)]
+    (mc/find-one-as-map
+      (mg/get-db conn "todo-lists") "collection"
+      {:_id (ObjectId. object-id)})))
 
 (defn close! [conn]
   (mg/disconnect conn))
@@ -28,7 +34,7 @@
     (insert-todo-list! conn)
     (close! conn))
   (let [conn (db-connection!)]
-   (mc/find-maps (mg/get-db conn "todo-lists") "collection"))
+    (mc/find-maps (mg/get-db conn "todo-lists") "collection"))
   (let [conn (db-connection!)]
-    (mc/find-one-as-map (mg/get-db conn "todo-lists") "collection" { :_id (ObjectId. "60ab92b90b6615f55ab0b21c")}))
+    (mc/find-one-as-map (mg/get-db conn "todo-lists") "collection" {:_id (ObjectId. "60ab92b90b6615f55ab0b21c")}))
   )

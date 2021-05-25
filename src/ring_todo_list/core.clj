@@ -39,13 +39,16 @@
         ["/:id"
          {:get
           {:coercion   reitit.coercion.schema/coercion
-           :parameters {:path {:id s/Int}}
+           :parameters {:path {:id s/Str}}
            :handler
-                       (fn [{:keys [parameters]}]
-                         (let [id (-> parameters :path :id)]
-                           {:status 200
-                            :body   {:id id :todo-list [{:id 2 :text "Do something else"}]}
-                            }))}}]
+             (fn [{:keys [parameters]}]
+               (let [conn (db/db-connection!)
+                     id (-> parameters :path :id)]
+                 (try
+                   (http/response (db/get-one id))
+                   (finally (db/close! conn)))
+                 ))
+           }}]
         ]
        ]
 
