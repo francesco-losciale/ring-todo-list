@@ -23,7 +23,7 @@
                    conn (db/db-connection!)
                    saved-todo-list (db/insert-todo-list! conn todo-list)
                    _ (db/close! conn)]
-               {:status 200
+               {:status 201
                 :body   saved-todo-list}
                ))
            }
