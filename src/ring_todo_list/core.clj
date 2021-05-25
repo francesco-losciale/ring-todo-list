@@ -5,6 +5,7 @@
             [schema.core :as s]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.adapter.jetty :refer [run-jetty]]
+            [ring.util.response :as http]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [muuntaja.core :as m]
             [ring-todo-list.db :as db]
@@ -18,13 +19,11 @@
         [""
          {:post
           {:handler
-           (fn [request]
-             (let [todo-list (:body-params request)
-                   conn (db/db-connection!)
-                   saved-todo-list (db/insert-todo-list! conn todo-list)
-                   _ (db/close! conn)]
-               {:status 201
-                :body   saved-todo-list}
+           (fn [{todo-list :body-params}]
+             (let [conn (db/db-connection!)]
+               (try
+                 (http/created "" (db/insert-todo-list! conn todo-list))
+                 (finally (db/close! conn)))
                ))
            }
           :get
