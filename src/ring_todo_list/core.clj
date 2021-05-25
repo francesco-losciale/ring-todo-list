@@ -29,9 +29,11 @@
           :get
           {:handler
            (fn [_]
-             {:status 200
-              :body   [{:id 1 :todo-list [{:id 2 :text "Do something"}]}]
-              })
+             (let [conn (db/db-connection!)]
+               (try
+                 (http/response (db/get-all))
+                 (finally (db/close! conn)))
+               ))
            }
           }]
         ["/:id"

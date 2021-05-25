@@ -16,6 +16,10 @@
     (mc/insert-and-return db "collection" todo-list)
     ))
 
+(defn get-all []
+  (let [conn (db-connection!)]
+    (mc/find-maps (mg/get-db conn "todo-lists") "collection")))
+
 (defn close! [conn]
   (mg/disconnect conn))
 
