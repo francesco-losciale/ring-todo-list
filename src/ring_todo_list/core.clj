@@ -19,14 +19,13 @@
          {:post
           {:handler
            (fn [request]
-             (let [todo-list (:body-params request)]
+             (let [todo-list (:body-params request)
+                   conn (db/db-connection!)
+                   saved-todo-list (db/insert-todo-list! conn todo-list)
+                   _ (db/close! conn)]
                {:status 200
-                :body   (let [conn (db/db-connection!)
-                              saved-todo-list (db/insert-todo-list! conn todo-list)]
-                          (do
-                            (db/close! conn)
-                            saved-todo-list))
-                }))
+                :body   saved-todo-list}
+               ))
            }
           :get
           {:handler
