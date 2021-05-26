@@ -11,6 +11,8 @@
             [ring-todo-list.db :as db]
             ))
 
+; TODO you should create the connection pool at the server startup (atom)?
+
 (def app
   (ring/ring-handler
     (ring/router
@@ -29,11 +31,7 @@
           :get
           {:handler
            (fn [_]
-             (let [conn (db/db-connection!)]
-               (try
-                 (http/response (db/get-all))
-                 (finally (db/close! conn)))
-               ))
+             (http/response (db/get-all)))
            }
           }]
         ["/:id"
@@ -45,7 +43,7 @@
                (let [conn (db/db-connection!)
                      id (-> parameters :path :id)]
                  (try
-                   (http/response (db/get-one id))
+                   (http/response (db/get-one conn id))
                    (finally (db/close! conn)))
                  ))
            }}]

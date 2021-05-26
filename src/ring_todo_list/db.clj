@@ -17,14 +17,19 @@
     ))
 
 (defn get-all []
-  (let [conn (db-connection!)]
-    (mc/find-maps (mg/get-db conn "todo-lists") "collection")))
+  ; find-maps closes the connection so you don't need to close it outside.
+  ; This is the reason `conn` is not passed as a value to the function.
+  ; https://github.com/michaelklishin/monger/pull/47 That was the bug it was fixing.
+  ; Previously, if you lazily consumed just the first portion of the result (from
+  ; either find-maps or find-seq), then the connection was never explicitly freed up
+  ; (because you didn’t reach the end of the sequence).
+  ; (it’s why laziness + side-effects = trouble in most cases)
+  (mc/find-maps (mg/get-db (db-connection!) "todo-lists") "collection"))
 
-(defn get-one [^String object-id]
-  (let [conn (db-connection!)]
-    (mc/find-one-as-map
-      (mg/get-db conn "todo-lists") "collection"
-      {:_id (ObjectId. object-id)})))
+(defn get-one [conn ^String object-id]
+  (mc/find-one-as-map
+    (mg/get-db conn "todo-lists") "collection"
+    {:_id (ObjectId. object-id)}))
 
 (defn close! [conn]
   (mg/disconnect conn))
