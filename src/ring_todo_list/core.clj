@@ -9,6 +9,8 @@
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [muuntaja.core :as m]
             [ring-todo-list.db :as db]
+            [reitit.swagger :as swagger]
+            [reitit.swagger-ui :as swagger-ui]
             ))
 
 ; TODO add swagger ui
@@ -20,10 +22,19 @@
     (reitit/ring-handler
       (reitit/router
         [
+         ["" {:no-doc true}
+          ["/swagger.json"
+          {:get (swagger/create-swagger-handler)}]
+         ["/swagger-ui*"
+          {:get (swagger-ui/create-swagger-ui-handler {:url "/swagger.json"})}]]
          ["/api/v1/todo-lists"
           [""
            {:post
-            {:handler
+            {:coercion reitit.coercion.schema/coercion
+             :summary "Create a new todo list"
+             :parameters {:body {:todo-list [{:id  s/Int :text s/Str}]}}
+             :responses {201 {:body {:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}}}
+             :handler
              (fn [{todo-list :body-params}]
                (http/created
                  ""
@@ -49,8 +60,8 @@
                                  (db/get-one @conn id)))
                              ))
              }}]
-          ]
-         ]
+          ]]
+
 
         {:data {
                 :muuntaja   m/instance
