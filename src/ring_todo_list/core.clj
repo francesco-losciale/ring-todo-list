@@ -14,41 +14,45 @@
 (def app
   (let [conn (atom (db/db-connection!))]
     (ring/ring-handler
-     (ring/router
-       [
-        ["/api/v1/todo-lists"
-         [""
-          {:post
-           {:handler
-            (fn [{todo-list :body-params}]
-              (http/created "" (db/insert-todo-list! @conn todo-list)))
-            }
-           :get
-           {:handler
-            (fn [_]
-              (http/response (db/get-all)))
-            }
-           }]
-         ["/:id"
-          {:get
-           {:coercion   reitit.coercion.schema/coercion
-            :parameters {:path {:id s/Str}}
-            :handler
-                        (fn [{:keys [parameters]}]
-                          (let [id (-> parameters :path :id)]
-                            (http/response (db/get-one @conn id))
-                            ))
-            }}]
+      (ring/router
+        [
+         ["/api/v1/todo-lists"
+          [""
+           {:post
+            {:handler
+             (fn [{todo-list :body-params}]
+               (http/created "" (db/insert-todo-list! @conn todo-list)))
+             }
+            :get
+            {:handler
+             (fn [_]
+               (http/response
+                 (map #(update % :_id str) (db/get-all))))
+             }
+            }]
+          ["/:id"
+           {:get
+            {:coercion   reitit.coercion.schema/coercion
+             :parameters {:path {:id s/Str}}
+             :handler
+                         (fn [{:keys [parameters]}]
+                           (let [id (-> parameters :path :id)]
+                             (http/response
+                               (update
+                                 (db/get-one @conn id)
+                                 :_id str))
+                             ))
+             }}]
+          ]
          ]
-        ]
 
-       {:data {
-               :muuntaja   m/instance
-               :middleware [muuntaja/format-middleware
-                            coercion/coerce-exceptions-middleware
-                            coercion/coerce-request-middleware
-                            coercion/coerce-response-middleware]
-               }}))))
+        {:data {
+                :muuntaja   m/instance
+                :middleware [muuntaja/format-middleware
+                             coercion/coerce-exceptions-middleware
+                             coercion/coerce-request-middleware
+                             coercion/coerce-response-middleware]
+                }}))))
 
 (defn -main [& args]
   (run-jetty
