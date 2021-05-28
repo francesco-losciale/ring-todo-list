@@ -21,9 +21,7 @@
           {:post
            {:handler
             (fn [{todo-list :body-params}]
-              (let []
-                (http/created "" (db/insert-todo-list! @conn todo-list))
-                ))
+              (http/created "" (db/insert-todo-list! @conn todo-list)))
             }
            :get
            {:handler
