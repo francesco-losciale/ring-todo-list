@@ -42,7 +42,10 @@
                    (db/insert-todo-list! @conn todo-list))))
              }
             :get
-            {:handler
+            {:coercion reitit.coercion.schema/coercion
+             :summary "Get all the todo lists"
+             :responses {200 {:body [{:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}]}}
+             :handler
              (fn [_]
                (http/response
                  (map transform-for-view (db/get-all))))
@@ -52,6 +55,8 @@
            {:get
             {:coercion   reitit.coercion.schema/coercion
              :parameters {:path {:id s/Str}}
+             :summary "Get specific todo lists"
+             :responses {200 {:body {:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}}}
              :handler
                          (fn [{:keys [parameters]}]
                            (let [id (-> parameters :path :id)]
