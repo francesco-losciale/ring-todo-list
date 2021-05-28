@@ -30,8 +30,7 @@
          ["/api/v1/todo-lists"
           [""
            {:post
-            {:coercion reitit.coercion.schema/coercion
-             :summary "Create a new todo list"
+            {:summary "Create a new todo list"
              :parameters {:body {:todo-list [{:id  s/Int :text s/Str}]}}
              :responses {201 {:body {:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}}}
              :handler
@@ -42,8 +41,7 @@
                    (db/insert-todo-list! @conn todo-list))))
              }
             :get
-            {:coercion reitit.coercion.schema/coercion
-             :summary "Get all the todo lists"
+            {:summary "Get all the todo lists"
              :responses {200 {:body [{:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}]}}
              :handler
              (fn [_]
@@ -53,8 +51,7 @@
             }]
           ["/:id"
            {:get
-            {:coercion   reitit.coercion.schema/coercion
-             :parameters {:path {:id s/Str}}
+            {:parameters {:path {:id s/Str}}
              :summary "Get specific todo lists"
              :responses {200 {:body {:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}}}
              :handler
@@ -69,6 +66,7 @@
 
 
         {:data {
+                :coercion reitit.coercion.schema/coercion
                 :muuntaja   m/instance
                 :middleware [muuntaja/format-middleware
                              coercion/coerce-exceptions-middleware
