@@ -1,5 +1,5 @@
 (ns ring-todo-list.core
-  (:require [reitit.ring :as ring]
+  (:require [reitit.ring :as reitit]
             [reitit.ring.coercion :as coercion]
             [reitit.coercion.schema]
             [schema.core :as s]
@@ -11,11 +11,14 @@
             [ring-todo-list.db :as db]
             ))
 
+; TODO add swagger ui
+; TODO add oauth2
+
 (def app
   (let [conn (atom (db/db-connection!))
         transform-for-view #(update % :_id str)]
-    (ring/ring-handler
-      (ring/router
+    (reitit/ring-handler
+      (reitit/router
         [
          ["/api/v1/todo-lists"
           [""
