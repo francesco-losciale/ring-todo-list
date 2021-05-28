@@ -11,52 +11,46 @@
             [ring-todo-list.db :as db]
             ))
 
-; TODO you should create the connection pool at the server startup (atom)?
-
 (def app
-  (ring/ring-handler
-    (ring/router
-      [
-       ["/api/v1/todo-lists"
-        [""
-         {:post
-          {:handler
-           (fn [{todo-list :body-params}]
-             (let [conn (db/db-connection!)]
-               (try
-                 (http/created "" (db/insert-todo-list! conn todo-list))
-                 (finally (db/close! conn)))
-               ))
-           }
-          :get
-          {:handler
-           (fn [_]
-             (http/response (db/get-all)))
-           }
-          }]
-        ["/:id"
-         {:get
-          {:coercion   reitit.coercion.schema/coercion
-           :parameters {:path {:id s/Str}}
-           :handler
-             (fn [{:keys [parameters]}]
-               (let [conn (db/db-connection!)
-                     id (-> parameters :path :id)]
-                 (try
-                   (http/response (db/get-one conn id))
-                   (finally (db/close! conn)))
-                 ))
-           }}]
+  (let [conn (atom (db/db-connection!))]
+    (ring/ring-handler
+     (ring/router
+       [
+        ["/api/v1/todo-lists"
+         [""
+          {:post
+           {:handler
+            (fn [{todo-list :body-params}]
+              (let []
+                (http/created "" (db/insert-todo-list! @conn todo-list))
+                ))
+            }
+           :get
+           {:handler
+            (fn [_]
+              (http/response (db/get-all)))
+            }
+           }]
+         ["/:id"
+          {:get
+           {:coercion   reitit.coercion.schema/coercion
+            :parameters {:path {:id s/Str}}
+            :handler
+                        (fn [{:keys [parameters]}]
+                          (let [id (-> parameters :path :id)]
+                            (http/response (db/get-one @conn id))
+                            ))
+            }}]
+         ]
         ]
-       ]
 
-      {:data {
-              :muuntaja   m/instance
-              :middleware [muuntaja/format-middleware
-                           coercion/coerce-exceptions-middleware
-                           coercion/coerce-request-middleware
-                           coercion/coerce-response-middleware]
-              }})))
+       {:data {
+               :muuntaja   m/instance
+               :middleware [muuntaja/format-middleware
+                            coercion/coerce-exceptions-middleware
+                            coercion/coerce-request-middleware
+                            coercion/coerce-response-middleware]
+               }}))))
 
 (defn -main [& args]
   (run-jetty
