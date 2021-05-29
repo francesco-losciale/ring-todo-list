@@ -13,7 +13,6 @@
             [reitit.swagger-ui :as swagger-ui]
             ))
 
-; TODO add swagger ui
 ; TODO add oauth2
 
 (def app
