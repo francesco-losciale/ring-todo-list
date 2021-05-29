@@ -1,16 +1,16 @@
 (ns ring-todo-list.core
-  (:require [reitit.ring :as reitit]
-            [reitit.ring.coercion :as coercion]
+  (:require [muuntaja.core :as m]
             [reitit.coercion.schema]
-            [schema.core :as s]
+            [reitit.ring.middleware.muuntaja :as muuntaja]
+            [reitit.ring :as reitit]
+            [reitit.ring.coercion :as coercion]
+            [reitit.swagger :as swagger]
+            [reitit.swagger-ui :as swagger-ui]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.util.response :as http]
-            [reitit.ring.middleware.muuntaja :as muuntaja]
-            [muuntaja.core :as m]
+            [schema.core :as s]
             [ring-todo-list.db :as db]
-            [reitit.swagger :as swagger]
-            [reitit.swagger-ui :as swagger-ui]
             ))
 
 ; TODO add oauth2
