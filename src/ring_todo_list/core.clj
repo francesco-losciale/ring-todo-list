@@ -6,6 +6,7 @@
             [reitit.ring.coercion :as coercion]
             [reitit.swagger :as swagger]
             [reitit.swagger-ui :as swagger-ui]
+            [ring.middleware.oauth2 :refer [wrap-oauth2]]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.util.response :as http]

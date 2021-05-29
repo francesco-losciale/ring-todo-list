@@ -5,6 +5,7 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [ring "1.9.3"]
+                 [ring-oauth2 "0.1.5"]
                  [ring/ring-jetty-adapter "1.9.3"]
                  [metosin/reitit "0.5.13"]
                  [com.novemberain/monger "3.1.0"]]
