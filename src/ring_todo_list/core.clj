@@ -29,7 +29,8 @@
           {:get (swagger-ui/create-swagger-ui-handler {:url "/swagger.json"})}]]
          ["/api/v1/todo-lists"
           [""
-           {:post
+           {
+            :post
             {:summary "Create a new todo list"
              :parameters {:body {:todo-list [{:id  s/Int :text s/Str}]}}
              :responses {201 {:body {:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}}}
@@ -40,6 +41,7 @@
                  (transform-for-view
                    (db/insert-todo-list! @conn todo-list))))
              }
+
             :get
             {:summary "Get all the todo lists"
              :responses {200 {:body [{:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}]}}
@@ -49,8 +51,10 @@
                  (map transform-for-view (db/get-all))))
              }
             }]
+
           ["/:id"
-           {:get
+           {
+            :get
             {:parameters {:path {:id s/Str}}
              :summary "Get specific todo lists"
              :responses {200 {:body {:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}}}
