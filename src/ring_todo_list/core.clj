@@ -7,6 +7,7 @@
             [reitit.swagger :as swagger]
             [reitit.swagger-ui :as swagger-ui]
             [ring.middleware.reload :refer [wrap-reload]]
+            [ring.middleware.cors :refer [wrap-cors]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.util.response :as http]
             [schema.core :as s]
@@ -72,6 +73,8 @@
                 :coercion reitit.coercion.schema/coercion
                 :muuntaja   m/instance
                 :middleware [muuntaja/format-middleware
+                             [wrap-cors :access-control-allow-origin [#".*"] ; <-- order matters
+                              :access-control-allow-methods [:get :post]]
                              coercion/coerce-exceptions-middleware
                              coercion/coerce-request-middleware
                              coercion/coerce-response-middleware]
