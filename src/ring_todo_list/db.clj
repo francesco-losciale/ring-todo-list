@@ -16,6 +16,11 @@
     (mc/insert-and-return db "collection" todo-list)
     ))
 
+(defn update-todo-list! [conn  ^String id todo-list]
+  (let [db (mg/get-db conn "todo-lists")]
+    (mc/update-by-id db "collection" (ObjectId. id) todo-list)
+    ))
+
 (defn get-all []
   ; find-maps closes the connection so you don't need to close it outside.
   ; This is the reason `conn` is not passed as a value to the function.
@@ -38,6 +43,14 @@
   (let [conn (db-connection!)]
     (insert-todo-list! conn)
     (close! conn))
+  (let [conn (db-connection!)]
+    (update-todo-list! conn "60d07d45ecf71b07c688e5f7" {:todo-list [{:text "sdfdg", :id 3} {:text "asdf", :id 2} {:text "asdf", :id 1}]})
+    ;(close! conn)
+    )
+  (let [conn (db-connection!)]
+    (get-one conn "60d07d45ecf71b07c688e5f7")
+    ;(close! conn)
+    )
   (let [conn (db-connection!)]
     (mc/find-maps (mg/get-db conn "todo-lists") "collection"))
   (let [conn (db-connection!)]

@@ -31,23 +31,23 @@
           [""
            {
             :post
-            {:summary "Create a new todo list"
-             :parameters {:body {:todo-list [{:id  s/Int :text s/Str}]}}
-             :responses {201 {:body {:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}}}
+            {:summary    "Create a new todo list"
+             :parameters {:body {:todo-list [{:id s/Int :text s/Str}]}}
+             :responses  {201 {:body {:_id s/Str :todo-list [{:id s/Int :text s/Str}]}}}
              :handler
-             (fn [{todo-list :body-params}]
-               (http/created
-                 ""
-                 (transform-for-view
-                   (db/insert-todo-list! @conn todo-list))))
+                         (fn [{todo-list :body-params}]
+                           (http/created
+                             ""
+                             (transform-for-view
+                               (db/insert-todo-list! @conn todo-list))))
              }
 
             :get
-            {:summary "Get all the todo lists"
-             :responses {200 {:body [{:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}]}}
+            {:summary   "Get all the todo lists"
+             :responses {200 {:body [{:_id s/Str :todo-list [{:id s/Int :text s/Str}]}]}}
              :handler
-             (fn [_]
-               (http/response
+                        (fn [_]
+                          (http/response
                  (map transform-for-view (db/get-all))))
              }
             }]
@@ -56,8 +56,8 @@
            {
             :get
             {:parameters {:path {:id s/Str}}
-             :summary "Get specific todo lists"
-             :responses {200 {:body {:_id s/Str :todo-list [{:id  s/Int :text s/Str}]}}}
+             :summary    "Get specific todo lists"
+             :responses  {200 {:body {:_id s/Str :todo-list [{:id s/Int :text s/Str}]}}}
              :handler
                          (fn [{:keys [parameters]}]
                            (let [id (-> parameters :path :id)]
@@ -65,7 +65,20 @@
                                (transform-for-view
                                  (db/get-one @conn id)))
                              ))
-             }}]
+             }
+
+            :put
+            {:summary    "Update an existing todo list"
+             :parameters {:path {:id s/Str}
+                          :body {:todo-list [{:id s/Int :text s/Str}]}}
+             :responses  {200 {:body {}}}
+             :handler
+                         (fn [{:keys [parameters]}]
+                           (db/update-todo-list! @conn (get-in parameters [:path :id]) (get-in parameters [:body]))
+                           (http/response {}))
+             }
+            }
+           ]
           ]]
 
 
@@ -74,7 +87,7 @@
                 :muuntaja   m/instance
                 :middleware [muuntaja/format-middleware
                              [wrap-cors :access-control-allow-origin [#".*"] ; <-- order matters
-                              :access-control-allow-methods [:get :post]]
+                              :access-control-allow-methods [:get :post :put]]
                              coercion/coerce-exceptions-middleware
                              coercion/coerce-request-middleware
                              coercion/coerce-response-middleware]
