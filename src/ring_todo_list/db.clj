@@ -5,6 +5,7 @@
   (:import org.bson.types.ObjectId))
 
 ; TODO it is recommended to use ObjectId so that your documents are immutable
+; TODO see section `Document ids (ObjectId)` here http://clojuremongodb.info/articles/getting_started.html
 
 (defn db-connection! []
   (let [cred (mcr/create "todo-lists" "todo-lists" "example")
